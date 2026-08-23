@@ -1,0 +1,5 @@
+---
+- name: Изменить имя хоста (Hostname) на сервере
+  ansible.builtin.hostname:
+    name: "{{ inventory_hostname }}"
+  become: true
