@@ -1,8 +1,14 @@
 ---
-# tasks file for common
-
-- name: Изменить имя хоста (Hostname) на сервере
+- name: Динамически изменить имя хоста (Hostname)
   ansible.builtin.hostname:
     name: "{{ inventory_hostname }}"
   become: true
 
+- name: set timezone to Europe/Moscow
+  ansible.builtin.timezone:
+    name: "{{ common_timezone }}"
+  become: true
+
+- name: create a swap file
+  ansible.builtin.command: "dd if=/dev/zero of={{ common_swapfile_path }} bs=1M count=1024"
+  become: true

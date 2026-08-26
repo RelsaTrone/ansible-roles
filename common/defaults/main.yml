@@ -1,2 +1,7 @@
 ---
-# defaults file for common
+# Часовой пояс по умолчанию
+common_timezone: "Europe/Moscow"
+
+# Полный путь к файлу подкачки (SWAP) по умолчанию
+common_swapfile_path: "/swapfile"
+
