@@ -1,33 +1,26 @@
 ---
-- name: Проверить, активен ли файл подкачки прямо сейчас
-  ansible.builtin.shell: "swapon --show=NAME --noheadings | grep -q '^{{ swaptrasher_file_path }}$'"
-  register: swap_active_check
-  failed_when: false
+- name: Check active swap
+  ansible.builtin.command:
+    cmd: swapon --show=NAME --noheadings
+  register: active_swap
   changed_when: false
+
+- name: Disable swap
+  ansible.builtin.command:
+    cmd: "swapoff {{ swapfile }}"
   become: true
+  when: swapfile in active_swap.stdout_lines
 
-- name: Отключить (swapoff) файл подкачки, если он активен
-  ansible.builtin.command: "swapoff {{ swaptrasher_file_path }}"
-  when: swap_active_check.rc == 0
-  become: true
-
-- name: Проверить физическое существование файла подкачки
-  ansible.builtin.stat:
-    path: "{{ swaptrasher_file_path }}"
-  register: swap_file_stat
-
-- name: Удалить файл подкачки, если он существует
-  ansible.builtin.file:
-    path: "{{ swaptrasher_file_path }}"
-    state: absent
-  when: swap_file_stat.stat.exists
-  become: true
-
-- name: Удалить упоминание файла подкачки из /etc/fstab
-  ansible.posix.mount:
-    path: none
-    src: "{{ swaptrasher_file_path }}"
+- name: Remove swap from fstab
+  ansible.builtin.mount:
+    name: none
+    src: "{{ swapfile }}"
     fstype: swap
     state: absent
   become: true
 
+- name: Remove swap file
+  ansible.builtin.file:
+    path: "{{ swapfile }}"
+    state: absent
+  become: true

@@ -1,14 +1,43 @@
 ---
-- name: Динамически изменить имя хоста (Hostname)
+- name: Динамически изменить имя хоста
   ansible.builtin.hostname:
     name: "{{ inventory_hostname }}"
   become: true
 
-- name: set timezone to Europe/Moscow
+- name: Установить часовой пояс
   ansible.builtin.timezone:
-    name: "{{ common_timezone }}"
+    name: "{{ timezone }}"
   become: true
 
-- name: create a swap file
-  ansible.builtin.command: "dd if=/dev/zero of={{ common_swapfile_path }} bs=1M count=1024"
+- name: Создать swap-файл
+  ansible.builtin.command:
+    cmd: "dd if=/dev/zero of={{ swapfile }} bs=1M count=1024"
+    creates: "{{ swapfile }}"
+  become: true
+
+- name: Установить права на swap-файл
+  ansible.builtin.file:
+    path: "{{ swapfile }}"
+    mode: "0600"
+  become: true
+
+- name: Инициализировать swap
+  ansible.builtin.command:
+    cmd: "mkswap {{ swapfile }}"
+  become: true
+  when: ansible_facts.swaptotal_mb | int == 0
+
+- name: Включить swap
+  ansible.builtin.command:
+    cmd: "swapon {{ swapfile }}"
+  become: true
+  when: ansible_facts.swaptotal_mb | int == 0
+
+- name: Добавить swap в fstab
+  ansible.builtin.mount:
+    name: none
+    src: "{{ swapfile }}"
+    fstype: swap
+    opts: sw
+    state: present
   become: true
