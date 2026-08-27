@@ -9,9 +9,9 @@
     name: "{{ timezone }}"
   become: true
 
-- name: Создать swap-файл
+- name: Create swap file
   ansible.builtin.command:
-    cmd: "dd if=/dev/zero of={{ swapfile }} bs=1M count=1024"
+    cmd: "truncate -s {{ swap_size }} {{ swapfile }}"
     creates: "{{ swapfile }}"
   become: true
 
@@ -34,7 +34,7 @@
   when: ansible_facts.swaptotal_mb | int == 0
 
 - name: Добавить swap в fstab
-  ansible.builtin.mount:
+  ansible.posix.mount:
     name: none
     src: "{{ swapfile }}"
     fstype: swap

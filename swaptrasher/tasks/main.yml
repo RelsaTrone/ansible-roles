@@ -12,7 +12,7 @@
   when: swapfile in active_swap.stdout_lines
 
 - name: Remove swap from fstab
-  ansible.builtin.mount:
+  ansible.posix.mount:
     name: none
     src: "{{ swapfile }}"
     fstype: swap
