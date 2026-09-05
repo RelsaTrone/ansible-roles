@@ -15,6 +15,21 @@
     creates: "{{ swapfile }}"
   become: true
 
+- name: installation packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cash: yes
+  ignore_errors: yes
+  with_items:
+    - "{{ packages }}"
+- name: Install additional packages
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  loop: "{{ packages }}"
+  become: true
 - name: Установить права на swap-файл
   ansible.builtin.file:
     path: "{{ swapfile }}"

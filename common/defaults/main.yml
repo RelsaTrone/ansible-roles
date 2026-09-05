@@ -2,3 +2,8 @@
 timezone: "Europe/Moscow"
 swapfile: "/swapfile"
 swap_size: "1G"
+packages:
+    - git
+    - htop
+    - net-tools
+    - wget
