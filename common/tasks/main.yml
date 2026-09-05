@@ -5,7 +5,7 @@
   become: true
 
 - name: Установить часовой пояс
-  ansible.builtin.timezone:
+  community.general.timezone:
     name: "{{ timezone }}"
   become: true
 
@@ -14,15 +14,6 @@
     cmd: "truncate -s {{ swap_size }} {{ swapfile }}"
     creates: "{{ swapfile }}"
   become: true
-
-- name: installation packages
-  apt:
-    name: "{{ item }}"
-    state: present
-    update_cash: yes
-  ignore_errors: yes
-  with_items:
-    - "{{ packages }}"
 - name: Install additional packages
   ansible.builtin.apt:
     name: "{{ item }}"
