@@ -1,7 +1,6 @@
 ---
 docker_packages:
   - docker.io
-  - docker-compose
 
 docker_service: docker
 docker_users: []

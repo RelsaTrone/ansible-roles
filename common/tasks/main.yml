@@ -1,7 +1,7 @@
 ---
 - name: Динамически изменить имя хоста
   ansible.builtin.hostname:
-    name: "{{ hostname }}"
+    name: "{{ inventory_hostname }}"
   become: true
 
 - name: Установить часовой пояс

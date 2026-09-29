@@ -5,22 +5,29 @@
   register: active_swap
   changed_when: false
 
+- name: Set swap file fact
+  ansible.builtin.set_fact:
+    detected_swap_file: "{{ active_swap.stdout_lines[0] }}"
+  when: active_swap.stdout_lines | length > 0
+
 - name: Disable swap
   ansible.builtin.command:
-    cmd: "swapoff {{ swapfile }}"
+    cmd: "swapoff {{ detected_swap_file }}"
   become: true
-  when: swapfile in active_swap.stdout_lines
+  when: detected_swap_file is defined
 
 - name: Remove swap from fstab
   ansible.posix.mount:
     name: none
-    src: "{{ swapfile }}"
+    src: "{{ detected_swap_file }}"
     fstype: swap
     state: absent
   become: true
+  when: detected_swap_file is defined
 
 - name: Remove swap file
   ansible.builtin.file:
-    path: "{{ swapfile }}"
+    path: "{{ detected_swap_file }}"
     state: absent
   become: true
+  when: detected_swap_file is defined
