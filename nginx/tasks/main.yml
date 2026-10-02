@@ -1,0 +1,41 @@
+---
+- name: Install nginx package on RedHat
+  ansible.builtin.yum:
+    name: nginx
+    state: present
+  when: ansible_os_family == "RedHat"
+  become: true
+
+- name: Install nginx package on Debian systems
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: true
+  when: ansible_os_family == "Debian"
+  become: true
+
+- name: Ensure nginx is enabled and running
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: true
+  become: true
+
+- name: Disable default site if required
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  when: not nginx_default_sites_enabled
+  become: true
+
+- name: Deploy nginx configuration file
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: "{{ nginx_conf_path }}"
+    owner: root
+    group: root
+    mode: '0644'
+    backup: true 
+  notify:
+    - reload nginx
+  become: true
