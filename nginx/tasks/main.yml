@@ -35,7 +35,8 @@
     owner: root
     group: root
     mode: '0644'
-    backup: true 
+    backup: true
+    validate: 'nginx -t -c %s'
   notify:
     - reload nginx
   become: true
