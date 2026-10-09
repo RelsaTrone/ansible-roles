@@ -40,3 +40,26 @@
   notify:
     - reload nginx
   become: true
+- name: Ensure htpasswd file exists (create empty)
+  ansible.builtin.file:
+    path: /etc/nginx/.htpasswd
+    state: touch
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+
+- name: Ensure apache2-utils is installed (for htpasswd)
+  ansible.builtin.apt:
+    name: apache2-utils
+    state: present
+    update_cache: true
+  when: ansible_os_family == "Debian"
+  become: true
+
+- name: Add users to htpasswd
+  ansible.builtin.command:
+    cmd: "htpasswd -bB /etc/nginx/.htpasswd {{ item.name }} {{ item.password }}"
+  loop: "{{ nginx_auth_users }}"
+  changed_when: true
+  become: true

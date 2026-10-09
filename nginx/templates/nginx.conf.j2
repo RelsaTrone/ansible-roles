@@ -16,10 +16,13 @@ http {
         listen       80;
         server_name  {{ nginx_server_name }};
 
-        location / {
-            proxy_pass http://{{ nginx_app_host }}:{{ nginx_app_port }};
+        location {{ nginx_app_path }}/ {
+            auth_basic "Restricted";
+            auth_basic_user_file /etc/nginx/.htpasswd;
+
+            proxy_pass http://{{ nginx_app_host }}:{{ nginx_app_port }}/;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
-        }
+	}
     }
 }

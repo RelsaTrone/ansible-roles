@@ -7,3 +7,7 @@ nginx_worker_connections: 1024
 nginx_server_name: localhost
 nginx_app_host: 127.0.0.1
 nginx_app_port: 5000
+nginx_app_path: "/pythoner"
+nginx_auth_users:
+  - name: linuxfactory
+    password: linuxfactory
