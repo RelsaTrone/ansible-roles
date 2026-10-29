@@ -10,4 +10,4 @@ nginx_app_port: 5000
 nginx_app_path: "/pythoner"
 nginx_auth_users:
   - name: linuxfactory
-    password: linuxfactory
+    password: "{{ nginx_password }}"

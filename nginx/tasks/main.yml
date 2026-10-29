@@ -42,10 +42,9 @@
   become: true
 
 - name: Ensure htpasswd file exists
-  ansible.builtin.copy:
-    content: ""
-    dest: /etc/nginx/.htpasswd
-    force: false
+  ansible.builtin.file:
+    path: /etc/nginx/.htpasswd
+    state: touch
     owner: root
     group: root
     mode: '0644'
@@ -59,19 +58,17 @@
   when: ansible_os_family == "Debian"
   become: true
 
-- name: Check which users already exist in htpasswd
-  ansible.builtin.command:
-    cmd: "grep -q '^{{ item.name }}:' /etc/nginx/.htpasswd"
+- name: Check if users exist in htpasswd
+  ansible.builtin.shell: "grep -q '^{{ item.name }}:' /etc/nginx/.htpasswd"
   loop: "{{ nginx_auth_users }}"
-  register: htpasswd_check
+  register: user_check
   failed_when: false
   changed_when: false
   become: true
 
 - name: Add missing users to htpasswd
-  ansible.builtin.command:
-    cmd: "htpasswd -bB /etc/nginx/.htpasswd {{ item.item.name }} {{ item.item.password }}"
-  loop: "{{ htpasswd_check.results }}"
+  ansible.builtin.command: "htpasswd -bB /etc/nginx/.htpasswd {{ item.item.name }} {{ item.item.password }}"
+  loop: "{{ user_check.results }}"
   when: item.rc != 0
   changed_when: true
   notify:
