@@ -41,6 +41,12 @@
     - reload nginx
   become: true
 
+- name: Ensure python3-passlib is installed
+  ansible.builtin.apt:
+    name: python3-passlib
+    state: present
+  become: true
+
 - name: Ensure htpasswd file exists
   ansible.builtin.file:
     path: /etc/nginx/.htpasswd
@@ -50,27 +56,17 @@
     mode: '0644'
   become: true
 
-- name: Ensure apache2-utils is installed (for htpasswd)
-  ansible.builtin.apt:
-    name: apache2-utils
-    state: present
-    update_cache: true
-  when: ansible_os_family == "Debian"
-  become: true
-
-- name: Check if users exist in htpasswd
-  ansible.builtin.shell: "grep -q '^{{ item.name }}:' /etc/nginx/.htpasswd"
+- name: Add or update users in htpasswd
+  ansible.builtin.command:
+    cmd: "htpasswd -bB /etc/nginx/.htpasswd {{ item.name }} {{ item.password }}"
   loop: "{{ nginx_auth_users }}"
-  register: user_check
-  failed_when: false
-  changed_when: false
-  become: true
-
-- name: Add missing users to htpasswd
-  ansible.builtin.command: "htpasswd -bB /etc/nginx/.htpasswd {{ item.item.name }} {{ item.item.password }}"
-  loop: "{{ user_check.results }}"
-  when: item.rc != 0
   changed_when: true
+  no_log: true
+  notify:
+    - reload nginx
+  become: true
+  loop: "{{ nginx_auth_users }}"
+  no_log: true
   notify:
     - reload nginx
   become: true
