@@ -47,24 +47,17 @@
     state: present
   become: true
 
-- name: Ensure htpasswd file exists
-  ansible.builtin.file:
+- name: Add or update users in htpasswd
+  community.general.htpasswd:
     path: /etc/nginx/.htpasswd
-    state: touch
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    hash_scheme: apr_md5_crypt
     owner: root
     group: root
     mode: '0644'
-  become: true
-
-- name: Add or update users in htpasswd
-  ansible.builtin.command:
-    cmd: "htpasswd -bB /etc/nginx/.htpasswd {{ item.name }} {{ item.password }}"
-  loop: "{{ nginx_auth_users }}"
-  changed_when: true
-  no_log: true
-  notify:
-    - reload nginx
-  become: true
+  environment:
+    PASSLIB_BUILTIN_BCRYPT: "disabled"
   loop: "{{ nginx_auth_users }}"
   no_log: true
   notify:
