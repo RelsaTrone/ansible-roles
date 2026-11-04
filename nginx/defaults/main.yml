@@ -10,4 +10,4 @@ nginx_app_port: 5000
 nginx_app_path: "/pythoner"
 nginx_auth_users:
   - name: linuxfactory
-    password: "{{ nginx_password }}"
+    password: "{{ lookup('community.hashi_vault.hashi_vault', 'secret/data/linuxfactory/pythoner/nginx/htpasswd/prod:admin') }}"

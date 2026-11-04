@@ -28,6 +28,15 @@
   when: not nginx_default_sites_enabled
   become: true
 
+- name: Deploy vault configuration file
+  ansible.builtin.template:
+    src: vault.conf.j2
+    dest: /etc/nginx/conf.d/vault.conf
+    mode: '0644'
+  notify:
+    - reload nginx
+  become: true
+
 - name: Deploy nginx configuration file
   ansible.builtin.template:
     src: nginx.conf.j2
