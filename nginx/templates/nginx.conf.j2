@@ -23,7 +23,9 @@ http {
             proxy_pass http://{{ nginx_app_host }}:{{ nginx_app_port }}/;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
-	}
-	include /etc/nginx/conf.d/vault.conf;
+        }
+
+        # Подключаем location-блоки для Vault
+        include /etc/nginx/conf.d/vault.conf;
     }
 }

@@ -1,17 +1,19 @@
-location /vault/ {
-    proxy_pass http://127.0.0.1:8200/;
+location = / {
+    return 302 /ui/;
+}
+
+location /ui/ {
+    proxy_pass http://127.0.0.1:8200/ui/;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_set_header Accept-Encoding "";
+}
 
-    proxy_redirect /ui/ /vault/ui/;
-    proxy_redirect /v1/ /vault/v1/;
-
-    sub_filter '<head>' '<head><base href="/vault/">';
-    sub_filter '"/ui/' '"/vault/ui/';
-    sub_filter '"/v1/' '"/vault/v1/';
-    sub_filter_once off;
-    sub_filter_types application/javascript text/html;
+location /v1/ {
+    proxy_pass http://127.0.0.1:8200/v1/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
 }
