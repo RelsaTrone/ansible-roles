@@ -68,7 +68,7 @@
   environment:
     PASSLIB_BUILTIN_BCRYPT: "disabled"
   loop: "{{ nginx_auth_users }}"
-  no_log: true
+  # no_log: true
   notify:
     - reload nginx
   become: true
