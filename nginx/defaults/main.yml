@@ -8,6 +8,7 @@ nginx_server_name: localhost
 nginx_app_host: 127.0.0.1
 nginx_app_port: 5000
 nginx_app_path: "/pythoner"
+
 nginx_auth_users:
-  - name: linuxfactory
-    password: "{{ lookup('community.hashi_vault.hashi_vault', 'secret/data/linuxfactory/pythoner/nginx/htpasswd/prod:admin') }}"
+  - name: "{{ lookup('community.hashi_vault.hashi_vault', 'secret/data/linuxfactory/pythoner/nginx/htpasswd/' + vault_env + ':login') }}"
+    password: "{{ lookup('community.hashi_vault.hashi_vault', 'secret/data/linuxfactory/pythoner/nginx/htpasswd/' + vault_env + ':password') }}"
