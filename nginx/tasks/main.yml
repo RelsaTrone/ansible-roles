@@ -12,6 +12,7 @@
     state: present
     update_cache: true
   when: ansible_os_family == "Debian"
+  tags: install
   become: true
 
 - name: Ensure nginx is enabled and running
@@ -48,6 +49,7 @@
     validate: 'nginx -t -c %s'
   notify:
     - reload nginx
+  tags: configure
   become: true
 
 - name: Ensure python3-passlib is installed

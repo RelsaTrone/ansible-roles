@@ -47,3 +47,9 @@
     opts: sw
     state: present
   become: true
+
+- name: Check disk space
+  ansible.builtin.command: df -h
+  register: disk_space
+  changed_when: false
+  tags: always
