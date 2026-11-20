@@ -14,13 +14,7 @@
     cmd: "truncate -s {{ swap_size }} {{ swapfile }}"
     creates: "{{ swapfile }}"
   become: true
-- name: Install additional packages
-  ansible.builtin.apt:
-    name: "{{ item }}"
-    state: present
-    update_cache: true
-  loop: "{{ packages }}"
-  become: true
+
 - name: Установить права на swap-файл
   ansible.builtin.file:
     path: "{{ swapfile }}"
@@ -46,6 +40,28 @@
     fstype: swap
     opts: sw
     state: present
+  become: true
+
+- name: Install mc
+  ansible.builtin.apt:
+    name: mc
+    state: present
+    update_cache: true
+  tags: mc
+  become: true
+
+- name: Install git
+  ansible.builtin.apt:
+    name: git
+    state: present
+  tags: git
+  become: true
+
+- name: Install htop
+  ansible.builtin.apt:
+    name: htop
+    state: present
+  tags: htop
   become: true
 
 - name: Check disk space
